@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Payment.DibaoPay", "Tgs.Payment.DibaoPay\Tgs.Payment.DibaoPay.csproj", "{75E2734D-7D59-4965-A025-A7BF7AF3C300}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{35974AA5-A204-4D43-B205-251A7BB8129C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		CodeMaid.config = CodeMaid.config
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DibaoPay.Core", "DibaoPay.Core\DibaoPay.Core.csproj", "{872D033B-AEA6-4913-AF16-172BF8C24C23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DibaoPay.Client", "DibaoPay.Client\DibaoPay.Client.csproj", "{201D5272-38D8-45B2-84EF-A30710CE2E98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DibaoPay.Core.UnitTests", "DibaoPay.Core.UnitTests\DibaoPay.Core.UnitTests.csproj", "{CF540699-19F8-4DB6-B09C-DE6433CD6438}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.Payment.DibaoPay.IntegrationTests", "Tgs.Payment.DibaoPay.IntegrationTests\Tgs.Payment.DibaoPay.IntegrationTests.csproj", "{1F8F51B8-8A32-492B-A579-A732FD0D1F67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DibaoPayTest", "DibaoPayTest\DibaoPayTest.csproj", "{592A0A6F-DF15-4C09-AD0B-928EB86D1DC1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{75E2734D-7D59-4965-A025-A7BF7AF3C300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75E2734D-7D59-4965-A025-A7BF7AF3C300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75E2734D-7D59-4965-A025-A7BF7AF3C300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75E2734D-7D59-4965-A025-A7BF7AF3C300}.Release|Any CPU.Build.0 = Release|Any CPU
+		{872D033B-AEA6-4913-AF16-172BF8C24C23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{872D033B-AEA6-4913-AF16-172BF8C24C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{872D033B-AEA6-4913-AF16-172BF8C24C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{872D033B-AEA6-4913-AF16-172BF8C24C23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{201D5272-38D8-45B2-84EF-A30710CE2E98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{201D5272-38D8-45B2-84EF-A30710CE2E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{201D5272-38D8-45B2-84EF-A30710CE2E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{201D5272-38D8-45B2-84EF-A30710CE2E98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF540699-19F8-4DB6-B09C-DE6433CD6438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF540699-19F8-4DB6-B09C-DE6433CD6438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF540699-19F8-4DB6-B09C-DE6433CD6438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF540699-19F8-4DB6-B09C-DE6433CD6438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F8F51B8-8A32-492B-A579-A732FD0D1F67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F8F51B8-8A32-492B-A579-A732FD0D1F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F8F51B8-8A32-492B-A579-A732FD0D1F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F8F51B8-8A32-492B-A579-A732FD0D1F67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{592A0A6F-DF15-4C09-AD0B-928EB86D1DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{592A0A6F-DF15-4C09-AD0B-928EB86D1DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{592A0A6F-DF15-4C09-AD0B-928EB86D1DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{592A0A6F-DF15-4C09-AD0B-928EB86D1DC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BA29B5CF-B643-43F3-9C76-7887E6B7A0FC}
+	EndGlobalSection
+EndGlobal
