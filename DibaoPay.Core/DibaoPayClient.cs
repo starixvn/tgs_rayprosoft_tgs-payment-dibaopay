@@ -11,7 +11,8 @@ public class DibaoPayClient
     private readonly ISystemClock _systemClock;
     private readonly ILogger<DibaoPayClient> _logger;
 
-    public DibaoPayClient(HttpClient httpClient,
+    public DibaoPayClient(
+        HttpClient httpClient,
         DibaoPayHasher hasher,
         ISystemClock systemClock,
         ILogger<DibaoPayClient> logger)
