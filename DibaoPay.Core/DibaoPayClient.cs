@@ -60,7 +60,11 @@ public class DibaoPayClient
         var status = node["status"]!.GetValue<int>();
 
         if (status != (int)DibaoPayStatus.成功执行)
-            throw new ApiFailException(((DibaoPayStatus)status).ToString());
+        {
+            var errorMessage = ((DibaoPayStatus)status).ToString();
+            _logger.LogError("DibaoPayClient Deposit Error:{errorMessage}", errorMessage);
+            throw new ApiFailException(errorMessage);
+        }
 
         var result = node["result"]!;
 
@@ -103,7 +107,11 @@ public class DibaoPayClient
         var status = node["status"]!.GetValue<int>();
 
         if (status != (int)DibaoPayStatus.成功执行)
-            throw new ApiFailException(((DibaoPayStatus)status).ToString());
+        {
+            var errorMessage = ((DibaoPayStatus)status).ToString();
+            _logger.LogError("DibaoPayClient Query Deposit Status Error:{errorMessage}", errorMessage);
+            throw new ApiFailException(errorMessage);
+        }
 
         var result = node["result"]!;
 
@@ -154,7 +162,11 @@ public class DibaoPayClient
         var status = node["status"]!.GetValue<int>();
 
         if (status != (int)DibaoPayStatus.成功执行)
-            throw new ApiFailException(((DibaoPayStatus)status).ToString());
+        {
+            var errorMessage = ((DibaoPayStatus)status).ToString();
+            _logger.LogError("DibaoPayClient Withdraw Error:{errorMessage}", errorMessage);
+            throw new ApiFailException(errorMessage);
+        }
 
         var result = node["result"]!;
 
@@ -195,7 +207,11 @@ public class DibaoPayClient
         var status = node["status"]!.GetValue<int>();
 
         if (status != (int)DibaoPayStatus.成功执行)
-            throw new ApiFailException(((DibaoPayStatus)status).ToString());
+        {
+            var errorMessage = ((DibaoPayStatus)status).ToString();
+            _logger.LogError("DibaoPayClient Query Merchant Balance Error:{errorMessage}", errorMessage);
+            throw new ApiFailException(errorMessage);
+        }
 
         var result = node["result"]!;
         var points = result["points"]!.GetValue<string>();
