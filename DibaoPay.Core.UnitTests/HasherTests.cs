@@ -48,7 +48,7 @@ public class HasherTests
     }
 
     [Fact]
-    public void 存款回調()
+    public void 存款回調成功()
     {
         var key = "hpDXGkYeB0Sof1LT";
         var dict = new Dictionary<string, string?>

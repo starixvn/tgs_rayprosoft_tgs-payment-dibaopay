@@ -14,6 +14,7 @@ public class DepositCallbackResult
     public string Amount { get; set; } = default!;
 
     [JsonPropertyName("real_amount")]
+    [JsonConverter(typeof(DecimalStringJsonConverter))]
     public string RealAmount { get; set; } = default!;
 
     [JsonPropertyName("custom")]
