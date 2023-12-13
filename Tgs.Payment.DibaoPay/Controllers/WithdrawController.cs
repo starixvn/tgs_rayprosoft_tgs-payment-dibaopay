@@ -124,9 +124,10 @@ public class WithdrawController : ControllerBase
                         HttpContext.RequestAborted).ConfigureAwait(false);
                 }
 
-                _logger.LogWarning("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo}",
+                _logger.LogInformation("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo}, payment Status:{status}",
                     formId,
-                    paymentReturn.ThirdPartyOrderNo);
+                    paymentReturn.ThirdPartyOrderNo,
+                    source.Status);
                 break;
 
             default:
