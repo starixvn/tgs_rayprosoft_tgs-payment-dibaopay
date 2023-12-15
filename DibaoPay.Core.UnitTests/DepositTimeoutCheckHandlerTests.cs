@@ -37,7 +37,8 @@ public class DepositTimeoutCheckHandlerTests
                 "hpDXGkYeB0Sof1LT",
                 formId,
                 "923",
-                "127.0.0.1"),
+                "127.0.0.1",
+                ExchangeRate: 1m),
             new DibaoPayDepositResponse(
                 200000m,
                 formId,

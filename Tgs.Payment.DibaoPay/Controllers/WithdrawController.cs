@@ -67,14 +67,16 @@ public class WithdrawController : ControllerBase
         }
 
         var status = (DibaoPayStatus)source.Status;
+        var amount = decimal.Parse(result.Amount);
 
         var paymentReturn = new DibaoPayWithdrawReturn()
         {
             FormId = formId,
-            Amount = decimal.Parse(result.Amount),
+            Amount = amount,
             Sign = sign,
             ThirdPartyOrderNo = result.TransactionId,
             Status = status.ToString(),
+            AfterExchangeAmount = amount / withdrawForm.ApplyInfo.Settings.ExchangeRate,
         };
 
         var fsm = PaymentStateMachineFactory.CreateWithdrawStateMachine(withdrawForm.Status);

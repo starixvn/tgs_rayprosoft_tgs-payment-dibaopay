@@ -45,7 +45,8 @@ public class WithdrawTests
             "127.0.0.1",
             "2008",
             "testBankAccount",
-            "testBankNo");
+            "testBankNo",
+            ExchangeRate: 1m);
         var withdrawResponse = new DibaoPayWithdrawResponse(formId, "1701736591726031228");
 
         var applyInfo = new DibaoPayWithdrawApplyInfo(settings, withdrawResponse);
@@ -76,11 +77,21 @@ public class WithdrawTests
 
         var actual = await response.Content.ReadAsStringAsync();
 
+        var paymentReturn = new DibaoPayWithdrawReturn()
+        {
+            FormId = formId,
+            Amount = 100000.00m,
+            Sign = "4A3AAD48C681A37CB4D6CAF184CB7F11",
+            ThirdPartyOrderNo = "1701736591726031228",
+            Status = DibaoPayStatus.成功执行.ToString(),
+            AfterExchangeAmount = 100000.00m
+        };
+
         Assert.Equal("success", actual);
         _ = fakePaymentServiceClient.Received(1)
             .SubmitWithdrawFormStatusAsync(
                 Arg.Is(formId),
-                paymentReturn: Arg.Any<string>(),
+                paymentReturn: Arg.Is(JsonSerializer.Serialize(paymentReturn, DibaoPayUtility.SerializerOptions)),
                 cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakePaymentClient.Received(1)
@@ -117,7 +128,8 @@ public class WithdrawTests
             "127.0.0.1",
             BankId: "2008",
             BankAccount: "testBankAccount",
-            BankNo: "testBankNo");
+            BankNo: "testBankNo",
+            ExchangeRate: 1m);
         var withdrawResponse = new DibaoPayWithdrawResponse(formId, "1701763085030837997");
 
         var applyInfo = new DibaoPayWithdrawApplyInfo(settings, withdrawResponse);
@@ -148,11 +160,21 @@ public class WithdrawTests
 
         var actual = await response.Content.ReadAsStringAsync();
 
+        var paymentReturn = new DibaoPayWithdrawReturn()
+        {
+            FormId = formId,
+            Amount = 100000.00m,
+            Sign = "7BD31668315912D231CF9A9CC15510FF",
+            ThirdPartyOrderNo = "1701763085030837997",
+            Status = DibaoPayStatus.交易失败.ToString(),
+            AfterExchangeAmount = 100000.00m
+        };
+
         Assert.Equal("success", actual);
         _ = fakePaymentServiceClient.Received(1)
             .SubmitWithdrawFormStatusAsync(
                 Arg.Is(formId),
-                paymentReturn: Arg.Any<string>(),
+                paymentReturn: Arg.Is(JsonSerializer.Serialize(paymentReturn, DibaoPayUtility.SerializerOptions)),
                 cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakePaymentClient.Received(1)

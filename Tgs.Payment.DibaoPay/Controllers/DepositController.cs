@@ -66,15 +66,20 @@ public class DepositController : ControllerBase
         }
 
         var status = (DibaoPayStatus)source.Status;
+        var realAmount = decimal.Parse(result.RealAmount);
+        var orderAmount = decimal.Parse(result.Amount);
+        var exchangeRate = depositForm.ApplyInfo.Settings.ExchangeRate;
 
         var paymentReturn = new DibaoPayDepositReturn()
         {
             Status = status.ToString(),
             FormId = formId,
             ThirdPartyOrderNo = result.TransactionId,
-            RealAmount = decimal.Parse(result.RealAmount),
-            OrderAmount = decimal.Parse(result.Amount),
+            RealAmount = realAmount,
+            OrderAmount = orderAmount,
             Sign = sign,
+            AfterExchangeRealAmount = realAmount / exchangeRate,
+            AfterExchangeOrderAmount = orderAmount / exchangeRate
         };
 
         var fsm = PaymentStateMachineFactory.CreateDepositStateMachine(depositForm.Status);
@@ -96,7 +101,7 @@ public class DepositController : ControllerBase
                     await paymentClient.ApproveDepositAsync(
                         depositForm.Id,
                         depositForm.BrandId,
-                        paymentReturn.RealAmount,
+                        paymentReturn.AfterExchangeRealAmount,
                         HttpContext.RequestAborted).ConfigureAwait(false);
                 }
 
