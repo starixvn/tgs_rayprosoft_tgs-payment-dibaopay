@@ -41,7 +41,15 @@ var privateKey = "hpDXGkYeB0Sof1LT";
 
 
 //Withdraw
-var withdrawSettings = new DibaoPayWithdrawSettings(merchantId, privateKey, Guid.NewGuid(), "127.0.0.1", "2008", "testBankAccount", "testBankNo");
+var withdrawSettings = new DibaoPayWithdrawSettings(
+    merchantId, 
+    privateKey, 
+    Guid.NewGuid(), 
+    "127.0.0.1", 
+    "2008", 
+    "testBankAccount", 
+    "testBankNo",
+    ExchangeRate: 1m);
 
 var withdrawReturn = await paymentClient.WithdrawAsync(
     "tgs.payment.dibaopay.withdraw",

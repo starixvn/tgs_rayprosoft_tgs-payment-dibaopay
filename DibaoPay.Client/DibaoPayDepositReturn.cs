@@ -12,4 +12,8 @@ public record DibaoPayDepositReturn
     public string Status { get; set; } = default!;
 
     public string Sign { get; set; } = default!;
+
+    public decimal AfterExchangeOrderAmount { get; set; }
+
+    public decimal AfterExchangeRealAmount { get; set; }
 }
