@@ -56,7 +56,7 @@ internal class DepositProcessor : IMessageProcessor
         await _paymentClient.ScheduleAsync(
             "tgs.payment.dibaopay.deposit.schedule.reject",
             settings.FormId,
-            DateTime.UtcNow.AddMinutes(11D),
+            DateTime.UtcNow.AddMinutes(60D),
             cancellationToken).ConfigureAwait(false);
 
         var msg = new DepositResponse

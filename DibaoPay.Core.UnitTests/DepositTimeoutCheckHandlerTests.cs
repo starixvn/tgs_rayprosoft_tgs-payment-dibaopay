@@ -13,7 +13,7 @@ namespace DibaoPay.Core.UnitTests;
 public class DepositTimeoutCheckHandlerTests
 {
     [Fact]
-    public async Task 申請十一分鐘的單子會自動拒絕()
+    public async Task 申請六十分鐘的單子會自動拒絕()
     {
         // Arrange
         var fakePaymentServiceClient = Substitute.For<IPaymentServiceClient>();
