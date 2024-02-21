@@ -4,25 +4,12 @@ using Tgs.SerialNumberGenerator;
 
 namespace Tgs.Payment.DibaoPay;
 
-public class DibaoPayClient
+public class DibaoPayClient(
+    HttpClient httpClient,
+    DibaoPayHasher hasher,
+    ISystemClock systemClock,
+    ILogger<DibaoPayClient> logger)
 {
-    private readonly HttpClient _httpClient;
-    private readonly DibaoPayHasher _hasher;
-    private readonly ISystemClock _systemClock;
-    private readonly ILogger<DibaoPayClient> _logger;
-
-    public DibaoPayClient(
-        HttpClient httpClient,
-        DibaoPayHasher hasher,
-        ISystemClock systemClock,
-        ILogger<DibaoPayClient> logger)
-    {
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
-        _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     public async ValueTask<DibaoPayClientDepositResponse> DepositAsync(string merchantId, string privateKey, DepositOrder order, CancellationToken cancellationToken = default)
     {
         var dict = new Dictionary<string, string?>
@@ -33,11 +20,11 @@ public class DibaoPayClient
             ["notify_url"] = order.CallbackUrl.AbsoluteUri,
             ["amount"] = order.Amount.ToString("#.##"),
             ["userip"] = order.UserIp,
-            ["timestamp"] = _systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
             ["custom"] = "",
         };
 
-        var sign = _hasher.ComputeHash(privateKey, dict);
+        var sign = hasher.ComputeHash(privateKey, dict);
         dict["sign"] = sign;
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/pay")
@@ -45,7 +32,7 @@ public class DibaoPayClient
             Content = new FormUrlEncodedContent(dict)
         };
 
-        var response = await _httpClient
+        var response = await httpClient
             .SendAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
@@ -53,7 +40,7 @@ public class DibaoPayClient
 
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        _logger.LogInformation("DibaoPayClient Deposit Body:{body}", body);
+        logger.LogInformation("DibaoPayClient Deposit Body:{body}", body);
 
         var node = JsonNode.Parse(body) ?? throw new ApiFailException("Deposit response can't read.");
 
@@ -62,7 +49,7 @@ public class DibaoPayClient
         if (status != (int)DibaoPayStatus.成功执行)
         {
             var errorMessage = ((DibaoPayStatus)status).ToString();
-            _logger.LogError("DibaoPayClient Deposit Error:{errorMessage}", errorMessage);
+            logger.LogError("DibaoPayClient Deposit Error:{errorMessage}", errorMessage);
             throw new ApiFailException(errorMessage);
         }
 
@@ -80,11 +67,11 @@ public class DibaoPayClient
         var dict = new Dictionary<string, string?>
         {
             ["uid"] = merchantId,
-            ["timestamp"] = _systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
             ["orderid"] = formId.ToString("N"),
         };
 
-        var sign = _hasher.ComputeHash(privateKey, dict);
+        var sign = hasher.ComputeHash(privateKey, dict);
         dict["sign"] = sign;
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/orderquery")
@@ -92,7 +79,7 @@ public class DibaoPayClient
             Content = new FormUrlEncodedContent(dict)
         };
 
-        var response = await _httpClient
+        var response = await httpClient
             .SendAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
@@ -100,7 +87,7 @@ public class DibaoPayClient
 
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        _logger.LogInformation("DibaoPayClient Query Deposit Status Body:{body}", body);
+        logger.LogInformation("DibaoPayClient Query Deposit Status Body:{body}", body);
 
         var node = JsonNode.Parse(body) ?? throw new ApiFailException("Query Deposit Status response can't read.");
 
@@ -109,7 +96,7 @@ public class DibaoPayClient
         if (status != (int)DibaoPayStatus.成功执行)
         {
             var errorMessage = ((DibaoPayStatus)status).ToString();
-            _logger.LogError("DibaoPayClient Query Deposit Status Error:{errorMessage}", errorMessage);
+            logger.LogError("DibaoPayClient Query Deposit Status Error:{errorMessage}", errorMessage);
             throw new ApiFailException(errorMessage);
         }
 
@@ -132,14 +119,14 @@ public class DibaoPayClient
             ["notify_url"] = order.CallbackUrl.AbsoluteUri,
             ["amount"] = order.Amount.ToString("#.##"),
             ["userip"] = order.UserIp,
-            ["timestamp"] = _systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
             ["custom"] = "",
             ["bank_account"] = order.BankAccount,
             ["bank_no"] = order.BankNo,
             ["bank_id"] = order.BankId,
         };
 
-        var sign = _hasher.ComputeHash(privateKey, dict);
+        var sign = hasher.ComputeHash(privateKey, dict);
         dict["sign"] = sign;
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/applyfor")
@@ -147,7 +134,7 @@ public class DibaoPayClient
             Content = new FormUrlEncodedContent(dict)
         };
 
-        var response = await _httpClient
+        var response = await httpClient
             .SendAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
@@ -155,7 +142,7 @@ public class DibaoPayClient
 
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        _logger.LogInformation("DibaoPayClient Withdraw Body:{body}", body);
+        logger.LogInformation("DibaoPayClient Withdraw Body:{body}", body);
 
         var node = JsonNode.Parse(body) ?? throw new ApiFailException("Withdraw response can't read.");
 
@@ -164,7 +151,7 @@ public class DibaoPayClient
         if (status != (int)DibaoPayStatus.成功执行)
         {
             var errorMessage = ((DibaoPayStatus)status).ToString();
-            _logger.LogError("DibaoPayClient Withdraw Error:{errorMessage}", errorMessage);
+            logger.LogError("DibaoPayClient Withdraw Error:{errorMessage}", errorMessage);
             throw new ApiFailException(errorMessage);
         }
 
@@ -181,10 +168,10 @@ public class DibaoPayClient
         var dict = new Dictionary<string, string?>
         {
             ["uid"] = merchantId,
-            ["timestamp"] = _systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
         };
 
-        var sign = _hasher.ComputeHash(privateKey, dict);
+        var sign = hasher.ComputeHash(privateKey, dict);
         dict["sign"] = sign;
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/getpoints")
@@ -192,7 +179,7 @@ public class DibaoPayClient
             Content = new FormUrlEncodedContent(dict)
         };
 
-        var response = await _httpClient
+        var response = await httpClient
             .SendAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
@@ -200,7 +187,7 @@ public class DibaoPayClient
 
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        _logger.LogInformation("DibaoPayClient Query Merchant Balance Body:{body}", body);
+        logger.LogInformation("DibaoPayClient Query Merchant Balance Body:{body}", body);
 
         var node = JsonNode.Parse(body) ?? throw new ApiFailException("Query Merchant Balance response can't read.");
 
@@ -209,7 +196,7 @@ public class DibaoPayClient
         if (status != (int)DibaoPayStatus.成功执行)
         {
             var errorMessage = ((DibaoPayStatus)status).ToString();
-            _logger.LogError("DibaoPayClient Query Merchant Balance Error:{errorMessage}", errorMessage);
+            logger.LogError("DibaoPayClient Query Merchant Balance Error:{errorMessage}", errorMessage);
             throw new ApiFailException(errorMessage);
         }
 

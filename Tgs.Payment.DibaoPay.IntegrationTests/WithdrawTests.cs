@@ -9,15 +9,8 @@ using Xunit.Abstractions;
 
 namespace Tgs.Payment.DibaoPay.IntegrationTests;
 
-public class WithdrawTests
+public class WithdrawTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public WithdrawTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper ?? throw new ArgumentNullException(nameof(testOutputHelper));
-    }
-
     [Fact]
     public async Task 代付回調_訂單狀態成功()
     {
@@ -26,7 +19,7 @@ public class WithdrawTests
 
         await using var web = DibaoPayTestHost.Factory
             .WithWebHostBuilder(hostBuilder => hostBuilder
-                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper))
+                .ConfigureLogging(logging => logging.AddXUnit(testOutputHelper))
                 .ConfigureServices(services => services
                     .AddSingleton(fakePaymentServiceClient)
                     .AddSingleton(fakePaymentClient)));
@@ -109,7 +102,7 @@ public class WithdrawTests
 
         await using var web = DibaoPayTestHost.Factory
             .WithWebHostBuilder(hostBuilder => hostBuilder
-                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper))
+                .ConfigureLogging(logging => logging.AddXUnit(testOutputHelper))
                 .ConfigureServices(services => services
                     .AddSingleton(fakePaymentServiceClient)
                     .AddSingleton(fakePaymentClient)));

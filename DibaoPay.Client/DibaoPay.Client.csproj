@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<RootNamespace>Tgs.Payment.DibaoPay.Client</RootNamespace>
-	<Version>0.0.2</Version>
+	<Version>0.0.3</Version>
 	<Authors>Raypro</Authors>
 	<Company>Raypro</Company>
 	<PackageId>Tgs.Payment.DibaoPay.Client</PackageId>

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Google.Protobuf;
 using Microsoft.Extensions.Options;
 using Tgs.Payment.Clients;
 using Tgs.Payment.DibaoPay.Client;
@@ -8,37 +7,32 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.Payment.DibaoPay.MessageQueue;
 
-internal class WithdrawProcessor : IMessageProcessor
+internal class WithdrawProcessor(
+    DibaoPayClient dibaoPayClient,
+    IPaymentClient paymentClient,
+    IOptions<DibaoPayOptions> optionsAccessor)
+    : IMessageProcessor<WithdrawRequest, WithdrawResponse>
 {
-    private readonly DibaoPayClient _dibaoPayClient;
-    private readonly IPaymentClient _paymentClient;
-    private readonly DibaoPayOptions _options;
+    private readonly DibaoPayOptions _options = optionsAccessor.Value;
 
-    public WithdrawProcessor(
-        DibaoPayClient dibaoPayClient,
-        IPaymentClient paymentClient,
-        IOptions<DibaoPayOptions> optionsAccessor)
+    public async ValueTask<WithdrawResponse> HandleAsync(
+        string subject,
+        WithdrawRequest data,
+        IEnumerable<MessageHeaderValue>? headerValues,
+        CancellationToken cancellationToken = default)
     {
-        _dibaoPayClient = dibaoPayClient ?? throw new ArgumentNullException(nameof(dibaoPayClient));
-        _paymentClient = paymentClient ?? throw new ArgumentNullException(nameof(paymentClient));
-        _options = optionsAccessor.Value;
-    }
-
-    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
-    {
-        var request = WithdrawRequest.Parser.ParseFrom(data.Span);
-        var settings = JsonSerializer.Deserialize<DibaoPayWithdrawSettings>(request.ApplyInfo, DibaoPayUtility.SerializerOptions)!;
+        var settings = JsonSerializer.Deserialize<DibaoPayWithdrawSettings>(data.ApplyInfo, DibaoPayUtility.SerializerOptions)!;
 
         var order = new WithdrawOrder(
             settings.FormId,
-            decimal.Parse(request.Amount) * settings.ExchangeRate,
+            decimal.Parse(data.Amount) * settings.ExchangeRate,
             new Uri($"{_options.CallbackBaseUrl}/withdraw/callback"),
             settings.UserIp,
             settings.BankId,
             settings.BankAccount,
             settings.BankNo);
 
-        var withdrawResponse = await _dibaoPayClient.WithdrawAsync(
+        var withdrawResponse = await dibaoPayClient.WithdrawAsync(
             settings.MerchantId,
             settings.PrivateKey,
             order,
@@ -48,16 +42,14 @@ internal class WithdrawProcessor : IMessageProcessor
             settings,
             new DibaoPayWithdrawResponse(withdrawResponse.FormId, withdrawResponse.ThirdPartyOrderNo));
 
-        await _paymentClient.SaveWithdrawFormThirdPartyOrderNoAsync(
+        await paymentClient.SaveWithdrawFormThirdPartyOrderNoAsync(
             settings.FormId,
             withdrawResponse.ThirdPartyOrderNo,
             cancellationToken);
 
-        var msg = new WithdrawResponse
+        return new WithdrawResponse
         {
             Result = JsonSerializer.Serialize(applyInfo, DibaoPayUtility.SerializerOptions)
         };
-
-        return msg.ToByteArray();
     }
 }

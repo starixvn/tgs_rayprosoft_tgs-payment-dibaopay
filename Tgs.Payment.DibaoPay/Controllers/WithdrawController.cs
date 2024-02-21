@@ -10,15 +10,8 @@ namespace Tgs.Payment.DibaoPay.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class WithdrawController : ControllerBase
+public class WithdrawController(ILogger<WithdrawController> logger) : ControllerBase
 {
-    private readonly ILogger<WithdrawController> _logger;
-
-    public WithdrawController(ILogger<WithdrawController> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     [HttpPost("callback", Name = "NotifyWithdraw")]
     [Consumes("application/x-www-form-urlencoded")]
     public async Task<string> WithdrawCallbackAsync(
@@ -32,7 +25,7 @@ public class WithdrawController : ControllerBase
 
         if (result == null)
         {
-            _logger.LogWarning("Can't deserialize withdraw callback result. ({result})", source.Result);
+            logger.LogWarning("Can't deserialize withdraw callback result. ({result})", source.Result);
             return "fail";
         }
 
@@ -44,7 +37,7 @@ public class WithdrawController : ControllerBase
 
         if (withdrawForm == null)
         {
-            _logger.LogWarning("Can't found withdraw form({id}).", formId);
+            logger.LogWarning("Can't found withdraw form({id}).", formId);
             return "fail";
         }
 
@@ -58,11 +51,11 @@ public class WithdrawController : ControllerBase
                 kv.Key,
                 kv.Value!.ToString())));
 
-        _logger.LogInformation("Compute hash: {hash}, sign: {sign}", hash, sign);
+        logger.LogInformation("Compute hash: {hash}, sign: {sign}", hash, sign);
 
         if (sign != hash)
         {
-            _logger.LogWarning("Sign value invalid. input: {sign}, compute: {hash}", sign, hash);
+            logger.LogWarning("Sign value invalid. input: {sign}, compute: {hash}", sign, hash);
             return "fail";
         }
 
@@ -126,14 +119,14 @@ public class WithdrawController : ControllerBase
                         HttpContext.RequestAborted).ConfigureAwait(false);
                 }
 
-                _logger.LogInformation("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo}, payment Status:{status}",
+                logger.LogInformation("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo}, payment Status:{status}",
                     formId,
                     paymentReturn.ThirdPartyOrderNo,
                     source.Status);
                 break;
 
             default:
-                _logger.LogWarning("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo} , payment Status:{status}",
+                logger.LogWarning("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo} , payment Status:{status}",
                     formId,
                     result.TransactionId,
                     source.Status);

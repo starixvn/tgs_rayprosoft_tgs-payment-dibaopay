@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Google.Protobuf;
 using Microsoft.Extensions.Options;
 using Tgs.Payment.Clients;
 using Tgs.Payment.DibaoPay.Client;
@@ -8,38 +7,32 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.Payment.DibaoPay.MessageQueue;
 
-internal class DepositProcessor : IMessageProcessor
+internal class DepositProcessor(
+    DibaoPayClient dibaoPayClient,
+    IPaymentClient paymentClient,
+    IOptions<DibaoPayOptions> optionsAccessor)
+    : IMessageProcessor<DepositRequest, DepositResponse>
 {
-    private readonly DibaoPayClient _dibaoPayClient;
-    private readonly IPaymentClient _paymentClient;
-    private readonly DibaoPayOptions _options;
+    private readonly DibaoPayOptions _options = optionsAccessor.Value;
 
-    public DepositProcessor(
-        DibaoPayClient dibaoPayClient,
-        IPaymentClient paymentClient,
-        IOptions<DibaoPayOptions> optionsAccessor)
+    public async ValueTask<DepositResponse> HandleAsync(
+        string subject,
+        DepositRequest data,
+        IEnumerable<MessageHeaderValue>? headerValues,
+        CancellationToken cancellationToken = default)
     {
-        _dibaoPayClient = dibaoPayClient ?? throw new ArgumentNullException(nameof(dibaoPayClient));
-        _paymentClient = paymentClient ?? throw new ArgumentNullException(nameof(paymentClient));
-        _options = optionsAccessor.Value;
-    }
-
-    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
-    {
-        var request = DepositRequest.Parser.ParseFrom(data.Span);
-
         var settings = JsonSerializer.Deserialize<DibaoPayDepositSettings>(
-            request.ApplyInfo,
+            data.ApplyInfo,
             DibaoPayUtility.SerializerOptions)!;
 
         var order = new DepositOrder(
-            decimal.Parse(request.Amount) * settings.ExchangeRate,
+            decimal.Parse(data.Amount) * settings.ExchangeRate,
             settings.FormId,
             new Uri($"{_options.CallbackBaseUrl}/deposit/callback"),
             settings.Channel,
             settings.UserIp);
 
-        var depositResponse = await _dibaoPayClient.DepositAsync(
+        var depositResponse = await dibaoPayClient.DepositAsync(
             settings.MerchantId,
             settings.PrivateKey,
             order,
@@ -53,17 +46,15 @@ internal class DepositProcessor : IMessageProcessor
                 depositResponse.RedirectUrl,
                 depositResponse.ThirdPartyOrderNo));
 
-        await _paymentClient.ScheduleAsync(
+        await paymentClient.ScheduleAsync(
             "tgs.payment.dibaopay.deposit.schedule.reject",
             settings.FormId,
             DateTime.UtcNow.AddMinutes(60D),
             cancellationToken).ConfigureAwait(false);
 
-        var msg = new DepositResponse
+        return new DepositResponse
         {
             Result = JsonSerializer.Serialize(applyInfo, DibaoPayUtility.SerializerOptions)
         };
-
-        return msg.ToByteArray();
     }
 }

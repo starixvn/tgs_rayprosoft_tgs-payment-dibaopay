@@ -4,15 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Tgs.Payment.DibaoPay;
 
-public class DibaoPayHasher
+public class DibaoPayHasher(ILogger<DibaoPayHasher> logger)
 {
-    private readonly ILogger<DibaoPayHasher> _logger;
-
-    public DibaoPayHasher(ILogger<DibaoPayHasher> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     public string ComputeHash(string privateKey, IEnumerable<KeyValuePair<string, string?>> dict)
     {
         var content = string.Join(
@@ -23,7 +16,7 @@ public class DibaoPayHasher
 
         var fullText = $"{content}&key={privateKey}";
 
-        _logger.LogTrace("FullText: {fullText}", fullText);
+        logger.LogTrace("FullText: {fullText}", fullText);
 
         var hash = MD5.HashData(Encoding.UTF8.GetBytes(fullText));
 
