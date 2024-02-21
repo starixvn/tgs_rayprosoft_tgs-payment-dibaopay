@@ -1,4 +1,5 @@
 ﻿namespace Tgs.Payment.DibaoPay.MessageQueue;
+
 public static class ProcessorTypes
 {
     public static readonly Type DepositProcessorType = typeof(DepositProcessor);

@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Google.Protobuf;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
