@@ -98,9 +98,8 @@ public class DepositProcessorTests
                 """));
 
         // Act
-        var actual = await sut.HandleAsync(request.ToByteArray());
-        var response = DepositResponse.Parser.ParseFrom(actual.Span);
-        var applyInfo = JsonSerializer.Deserialize<DibaoPayDepositApplyInfo>(response.Result, DibaoPayUtility.SerializerOptions);
+        var actual = await sut.HandleAsync("test", request, null);
+        var applyInfo = JsonSerializer.Deserialize<DibaoPayDepositApplyInfo>(actual.Result, DibaoPayUtility.SerializerOptions);
 
         // Assert
         _ = fakePaymentClient.Received(1)
@@ -202,9 +201,8 @@ public class DepositProcessorTests
                 """));
 
         // Act
-        var actual = await sut.HandleAsync(request.ToByteArray());
-        var response = DepositResponse.Parser.ParseFrom(actual.Span);
-        var applyInfo = JsonSerializer.Deserialize<DibaoPayDepositApplyInfo>(response.Result, DibaoPayUtility.SerializerOptions);
+        var actual = await sut.HandleAsync("test", request, null);
+        var applyInfo = JsonSerializer.Deserialize<DibaoPayDepositApplyInfo>(actual.Result, DibaoPayUtility.SerializerOptions);
 
         // Assert
         _ = fakePaymentClient.Received(1)

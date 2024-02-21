@@ -2,20 +2,23 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
+using NATS.Client.Core;
 using Tgs.Payment.Clients;
-using Tgs.Payment.DibaoPay;
 using Tgs.Payment.DibaoPay.Client;
-using Tgs.SerialNumberGenerator;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services
+    .AddKeyedSingleton(
+        "Nats",
+        (sp, _) => new NatsConnection(NatsOpts.Default with
+        {
+            Url = "nats://localhost:4222"
+        }))
     .AddPaymentClient()
-    .AddPhoenixToolkitsMessageQueue()
+    .AddMessageQueue()
     .AddNatsMessageQueue(natsConfig => natsConfig
-        .ConfigQueueOptions((opt, _) => opt.Url = "nats://localhost:4222"))
+        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats")))
     .AddNatsGlobPatternExchange("*");
 
 var app = builder.Build();
@@ -39,15 +42,14 @@ var privateKey = "hpDXGkYeB0Sof1LT";
 
 //logger.LogInformation("DepositReturn: {depositReturn}", depositReturn);
 
-
 //Withdraw
 var withdrawSettings = new DibaoPayWithdrawSettings(
-    merchantId, 
-    privateKey, 
-    Guid.NewGuid(), 
-    "127.0.0.1", 
-    "2008", 
-    "testBankAccount", 
+    merchantId,
+    privateKey,
+    Guid.NewGuid(),
+    "127.0.0.1",
+    "2008",
+    "testBankAccount",
     "testBankNo",
     ExchangeRate: 1m);
 
@@ -58,7 +60,6 @@ var withdrawReturn = await paymentClient.WithdrawAsync(
 
 logger.LogInformation("WithdrawReturn: {withdrawReturn}", withdrawReturn);
 
-
 //訂單查詢
 //var httpClient = new HttpClient();
 //httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
@@ -67,7 +68,6 @@ logger.LogInformation("WithdrawReturn: {withdrawReturn}", withdrawReturn);
 
 //var queryReturn = await client.QueryOrderStatusAsync(merchantId, privateKey, Guid.Parse("13b03ac8926611ee94340242ac120003"));
 //logger.LogInformation("{return}", queryReturn);
-
 
 //商戶餘額查詢
 //var httpClient = new HttpClient();

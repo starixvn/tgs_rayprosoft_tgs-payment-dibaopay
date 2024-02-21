@@ -10,15 +10,8 @@ namespace Tgs.Payment.DibaoPay.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class DepositController : ControllerBase
+public class DepositController(ILogger<DepositController> logger) : ControllerBase
 {
-    private readonly ILogger<DepositController> _logger;
-
-    public DepositController(ILogger<DepositController> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     [HttpPost("callback", Name = "NotifyDeposit")]
     [Consumes("application/x-www-form-urlencoded")]
     public async Task<string> DepositCallbackAsync(
@@ -32,7 +25,7 @@ public class DepositController : ControllerBase
 
         if (result == null)
         {
-            _logger.LogWarning("Can't deserialize deposit callback result. ({result})", source.Result);
+            logger.LogWarning("Can't deserialize deposit callback result. ({result})", source.Result);
             return "fail";
         }
 
@@ -44,7 +37,7 @@ public class DepositController : ControllerBase
 
         if (depositForm == null)
         {
-            _logger.LogWarning("Can't found deposit form({id}).", formId);
+            logger.LogWarning("Can't found deposit form({id}).", formId);
             return "fail";
         }
 
@@ -57,11 +50,11 @@ public class DepositController : ControllerBase
                 kv.Key,
                 kv.Value!.ToString())));
 
-        _logger.LogInformation("Compute hash: {hash}, sign: {sign}", hash, sign);
+        logger.LogInformation("Compute hash: {hash}, sign: {sign}", hash, sign);
 
         if (sign != hash)
         {
-            _logger.LogWarning("Sign value invalid. input: {sign}, compute: {hash}", sign, hash);
+            logger.LogWarning("Sign value invalid. input: {sign}, compute: {hash}", sign, hash);
             return "fail";
         }
 
@@ -134,7 +127,7 @@ public class DepositController : ControllerBase
                 break;
 
             default:
-                _logger.LogWarning("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo} , payment Status:{status}",
+                logger.LogWarning("FormId:{formId}, ThirdPartyOrderNo:{ThirdPartyOrderNo} , payment Status:{status}",
                     formId,
                     result.TransactionId,
                     source.Status);

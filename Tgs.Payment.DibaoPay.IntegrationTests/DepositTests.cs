@@ -9,15 +9,8 @@ using Xunit.Abstractions;
 
 namespace Tgs.Payment.DibaoPay.IntegrationTests;
 
-public class DepositTests
+public class DepositTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public DepositTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper ?? throw new ArgumentNullException(nameof(testOutputHelper));
-    }
-
     [Fact]
     public async Task 代收回調_訂單狀態成功()
     {
@@ -26,7 +19,7 @@ public class DepositTests
 
         await using var web = DibaoPayTestHost.Factory
             .WithWebHostBuilder(hostBuilder => hostBuilder
-                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper))
+                .ConfigureLogging(logging => logging.AddXUnit(testOutputHelper))
                 .ConfigureServices(services => services
                     .AddSingleton(fakePaymentServiceClient)
                     .AddSingleton(fakePaymentClient)));
@@ -114,7 +107,7 @@ public class DepositTests
 
         await using var web = DibaoPayTestHost.Factory
             .WithWebHostBuilder(hostBuilder => hostBuilder
-                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper))
+                .ConfigureLogging(logging => logging.AddXUnit(testOutputHelper))
                 .ConfigureServices(services => services
                     .AddSingleton(fakePaymentServiceClient)
                     .AddSingleton(fakePaymentClient)));
@@ -177,7 +170,7 @@ public class DepositTests
             RealAmount = decimal.Parse("196400.00"),
             OrderAmount = decimal.Parse("200000.00"),
             Sign = dict["sign"],
-            AfterExchangeRealAmount = decimal.Parse("196400.00")  / exchangeRate,
+            AfterExchangeRealAmount = decimal.Parse("196400.00") / exchangeRate,
             AfterExchangeOrderAmount = decimal.Parse("200000.00") / exchangeRate,
         };
 

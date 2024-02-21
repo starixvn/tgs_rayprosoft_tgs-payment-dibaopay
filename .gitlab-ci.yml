@@ -22,8 +22,6 @@ build-code:
 
 unit-test:
   extends: .unit-test-template
-  variables:
-    Framework: net7.0
 
 push-nuget:
   extends: .push-nuget-template
@@ -34,20 +32,9 @@ push-nuget:
       - DibaoPay.Client/bin/$BuildConfiguration/*.nupkg
 
 push-docker-image:
-  stage: publish
-  needs:
-    - build-code      
-    - unit-test
-  only:
-    - main
-  cache:
-    key: Tgs.Payment.DibaoPay.$CI_PIPELINE_ID
-    untracked: true
-    policy: pull
+  extends: .push-docker-image-template
   script:
-    - export Tag="$(date -d $CI_PIPELINE_CREATED_AT +%Y%m%d%H%M).$CI_PIPELINE_IID"
-    - docker build --build-arg $BuildConfiguration -f Tgs.Payment.DibaoPay/Dockerfile -t $ImageName:$Tag . --no-cache
-    - docker push $ImageName:$Tag
+    - push_docker 'Tgs.Payment.DibaoPay' $ImageName $Tag
 
 push-k8s-template:
   extends: .push-k8s-template

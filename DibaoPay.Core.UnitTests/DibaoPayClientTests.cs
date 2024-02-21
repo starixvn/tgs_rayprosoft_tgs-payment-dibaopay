@@ -39,7 +39,7 @@ public class DibaoPayClientTests
                 { "uid", "PGTES" },
                 { "timestamp", "1701670501996" },
                 { "sign", "A6EE675604B67AACB1CC8499DEC457C6" }
-            }).ReadAsStringAsync().ConfigureAwait(false))
+            }).ReadAsStringAsync())
             .Respond(HttpStatusCode.OK, new StringContent(
                 """
                 {
@@ -100,7 +100,7 @@ public class DibaoPayClientTests
                 { "timestamp", "1701670024858" },
                 { "custom" , "" },
                 { "sign", "A1600AA7349DE1F272624E43F4D19AF4" }
-            }).ReadAsStringAsync().ConfigureAwait(false))
+            }).ReadAsStringAsync())
             .Respond(HttpStatusCode.OK, new StringContent(
                 """
                 {
@@ -154,7 +154,7 @@ public class DibaoPayClientTests
                 { "timestamp", "1701670664587" },
                 { "orderid", "13b03ac8926611ee94340242ac120003" },
                 { "sign", "CF2D5FFC58602BE5AA3E01FC71E6B594" }
-            }).ReadAsStringAsync().ConfigureAwait(false))
+            }).ReadAsStringAsync())
             .Respond(HttpStatusCode.OK, new StringContent(
                 """
                 {
@@ -235,7 +235,7 @@ public class DibaoPayClientTests
                 { "bank_no" , "testBankNo" },
                 { "bank_id" , "2008" },
                 { "sign", "D0EE056B5B6CB1B58651FE4C4ADD6E4C" }
-            }).ReadAsStringAsync().ConfigureAwait(false))
+            }).ReadAsStringAsync())
             .Respond(HttpStatusCode.OK, new StringContent(
                 """
                 {

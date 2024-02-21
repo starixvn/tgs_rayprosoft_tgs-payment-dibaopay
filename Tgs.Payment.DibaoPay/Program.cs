@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Options;
+using NATS.Client.Core;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.MessageQueue.Nats.Serializers;
 using Tgs.Payment.DibaoPay;
 using Tgs.Payment.DibaoPay.MessageQueue;
 
@@ -48,14 +50,16 @@ builder.Services
         }));
 
 builder.Services
-    .AddPhoenixToolkitsMessageQueue()
-    .AddNatsMessageQueue(config => config
-        .ConfigQueueOptions((options, sp) =>
+    .AddKeyedSingleton(
+        "Nats",
+        (sp, _) => new NatsConnection(NatsOpts.Default with
         {
-            var config = sp.GetRequiredService<IConfiguration>();
-
-            options.Url = config.GetConnectionString("Nats")!;
-        })
+            Url = builder.Configuration.GetConnectionString("Nats")!,
+            SerializerRegistry = TgsNatsSerializerRegistration.Default
+        }))
+    .AddMessageQueue()
+    .AddNatsMessageQueue(config => config
+        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
         .AddProcessor(
             ProcessorTypes.DepositProcessorType,
             "tgs.payment.dibaopay.deposit",
@@ -70,6 +74,7 @@ builder.Services
             $"tgs.payment.dibaopay.deposit.schedule.reject"))
     .AddNatsGlobPatternExchange("*");
 
+var excludeExtensions = new[] { "html", "ico", "png", "jpg" };
 builder.Services
     .AddProfileViewer()
     .AddHttpLogging(logging =>
@@ -103,7 +108,7 @@ builder.Services
             && !httpContext.Request.Path.StartsWithSegments("/healthz")
             && !httpContext.Request.Path.StartsWithSegments("/metrics")
             && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-            && !new[] { "html", "ico", "png", "jpg" }.Any(
+            && !excludeExtensions.Any(
                 ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
 
 var app = builder.Build();
