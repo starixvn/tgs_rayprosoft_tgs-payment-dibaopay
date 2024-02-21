@@ -1,4 +1,5 @@
 ﻿namespace Tgs.Payment.DibaoPay;
+
 public class DibaoPayOptions
 {
     public required Uri CallbackBaseUrl { get; set; }

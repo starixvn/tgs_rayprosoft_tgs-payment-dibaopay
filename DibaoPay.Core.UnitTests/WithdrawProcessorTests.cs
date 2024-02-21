@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Google.Protobuf;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -24,12 +23,12 @@ public class WithdrawProcessorTests
 
         var httpClient = mockHttp.ToHttpClient();
         httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
-        var fakeSystemClock = Substitute.For<ISystemClock>();
+        var fakeTimeProvider = Substitute.For<TimeProvider>();
 
         var fakeDibaoPayClient = new DibaoPayClient(
             httpClient,
             new DibaoPayHasher(NullLogger<DibaoPayHasher>.Instance),
-            fakeSystemClock,
+            fakeTimeProvider,
             NullLogger<DibaoPayClient>.Instance);
 
         var fakePaymentClient = Substitute.For<IPaymentClient>();
@@ -65,7 +64,7 @@ public class WithdrawProcessorTests
             ApplyInfo = JsonSerializer.Serialize(applySettings, DibaoPayUtility.SerializerOptions)
         };
 
-        _ = fakeSystemClock.UtcNow
+        _ = fakeTimeProvider.GetUtcNow()
             .Returns(DateTimeOffset.FromUnixTimeMilliseconds(1701671020850));
 
         _ = mockHttp
@@ -121,12 +120,12 @@ public class WithdrawProcessorTests
 
         var httpClient = mockHttp.ToHttpClient();
         httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
-        var fakeSystemClock = Substitute.For<ISystemClock>();
+        var fakeTimeProvider = Substitute.For<TimeProvider>();
 
         var fakeDibaoPayClient = new DibaoPayClient(
             httpClient,
             new DibaoPayHasher(NullLogger<DibaoPayHasher>.Instance),
-            fakeSystemClock,
+            fakeTimeProvider,
             NullLogger<DibaoPayClient>.Instance);
 
         var fakePaymentClient = Substitute.For<IPaymentClient>();
@@ -162,7 +161,7 @@ public class WithdrawProcessorTests
             ApplyInfo = JsonSerializer.Serialize(applySettings, DibaoPayUtility.SerializerOptions)
         };
 
-        _ = fakeSystemClock.UtcNow
+        _ = fakeTimeProvider.GetUtcNow()
             .Returns(DateTimeOffset.FromUnixTimeMilliseconds(1701671020850));
 
         _ = mockHttp
