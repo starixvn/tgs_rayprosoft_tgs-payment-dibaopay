@@ -38,4 +38,12 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Users\Phoenix\source\repos\tgs-payment-dibaopay\Tgs.Payment.DibaoPay.IntegrationTests\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\Users\Phoenix\source\repos\tgs-payment-dibaopay\Tgs.Payment.DibaoPay.IntegrationTests\.editorconfig" />
+  </ItemGroup>
+
 </Project>

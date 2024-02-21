@@ -39,15 +39,14 @@ var privateKey = "hpDXGkYeB0Sof1LT";
 
 //logger.LogInformation("DepositReturn: {depositReturn}", depositReturn);
 
-
 //Withdraw
 var withdrawSettings = new DibaoPayWithdrawSettings(
-    merchantId, 
-    privateKey, 
-    Guid.NewGuid(), 
-    "127.0.0.1", 
-    "2008", 
-    "testBankAccount", 
+    merchantId,
+    privateKey,
+    Guid.NewGuid(),
+    "127.0.0.1",
+    "2008",
+    "testBankAccount",
     "testBankNo",
     ExchangeRate: 1m);
 
@@ -58,7 +57,6 @@ var withdrawReturn = await paymentClient.WithdrawAsync(
 
 logger.LogInformation("WithdrawReturn: {withdrawReturn}", withdrawReturn);
 
-
 //訂單查詢
 //var httpClient = new HttpClient();
 //httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
@@ -67,7 +65,6 @@ logger.LogInformation("WithdrawReturn: {withdrawReturn}", withdrawReturn);
 
 //var queryReturn = await client.QueryOrderStatusAsync(merchantId, privateKey, Guid.Parse("13b03ac8926611ee94340242ac120003"));
 //logger.LogInformation("{return}", queryReturn);
-
 
 //商戶餘額查詢
 //var httpClient = new HttpClient();
