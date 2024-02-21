@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
 using RichardSzalay.MockHttp;
 using Tgs.Payment.DibaoPay;
 using Tgs.SerialNumberGenerator;
@@ -18,14 +17,18 @@ public class DibaoPayClientTests
         httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
 
         var signer = new DibaoPayHasher(NullLogger<DibaoPayHasher>.Instance);
-        var fakeSystemClock = Substitute.For<ISystemClock>();
+        var fakeTimeProvider = Substitute.For<TimeProvider>();
 
-        var sut = new DibaoPayClient(httpClient, signer, fakeSystemClock, NullLogger<DibaoPayClient>.Instance);
+        var sut = new DibaoPayClient(
+            httpClient,
+            signer,
+            fakeTimeProvider,
+            NullLogger<DibaoPayClient>.Instance);
 
         var merchantId = "PGTES";
         var privateKey = "hpDXGkYeB0Sof1LT";
 
-        _ = fakeSystemClock.UtcNow
+        _ = fakeTimeProvider.GetUtcNow()
             .Returns(DateTimeOffset.FromUnixTimeMilliseconds(1701670501996));
 
         _ = mockHttp
@@ -65,9 +68,13 @@ public class DibaoPayClientTests
         httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
 
         var signer = new DibaoPayHasher(NullLogger<DibaoPayHasher>.Instance);
-        var fakeSystemClock = Substitute.For<ISystemClock>();
+        var fakeTimeProvider = Substitute.For<TimeProvider>();
 
-        var sut = new DibaoPayClient(httpClient, signer, fakeSystemClock, NullLogger<DibaoPayClient>.Instance);
+        var sut = new DibaoPayClient(
+            httpClient,
+            signer,
+            fakeTimeProvider,
+            NullLogger<DibaoPayClient>.Instance);
 
         var merchantId = "PGTES";
         var privateKey = "hpDXGkYeB0Sof1LT";
@@ -80,7 +87,7 @@ public class DibaoPayClientTests
             Channel: "923",
             UserIp: "127.0.0.1");
 
-        _ = fakeSystemClock.UtcNow
+        _ = fakeTimeProvider.GetUtcNow()
             .Returns(DateTimeOffset.FromUnixTimeMilliseconds(1701670024858));
 
         _ = mockHttp
@@ -131,15 +138,19 @@ public class DibaoPayClientTests
         httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
 
         var signer = new DibaoPayHasher(NullLogger<DibaoPayHasher>.Instance);
-        var fakeSystemClock = Substitute.For<ISystemClock>();
+        var fakeTimeProvider = Substitute.For<TimeProvider>();
 
-        var sut = new DibaoPayClient(httpClient, signer, fakeSystemClock, NullLogger<DibaoPayClient>.Instance);
+        var sut = new DibaoPayClient(
+            httpClient,
+            signer,
+            fakeTimeProvider,
+            NullLogger<DibaoPayClient>.Instance);
 
         var merchantId = "PGTES";
         var privateKey = "hpDXGkYeB0Sof1LT";
         var formId = Guid.Parse("13b03ac8926611ee94340242ac120003");
 
-        _ = fakeSystemClock.UtcNow
+        _ = fakeTimeProvider.GetUtcNow()
             .Returns(DateTimeOffset.FromUnixTimeMilliseconds(1701670664587));
 
         _ = mockHttp
@@ -195,9 +206,13 @@ public class DibaoPayClientTests
         httpClient.BaseAddress = new Uri("https://api.dibaopay.support");
 
         var signer = new DibaoPayHasher(NullLogger<DibaoPayHasher>.Instance);
-        var fakeSystemClock = Substitute.For<ISystemClock>();
+        var fakeTimeProvider = Substitute.For<TimeProvider>();
 
-        var sut = new DibaoPayClient(httpClient, signer, fakeSystemClock, NullLogger<DibaoPayClient>.Instance);
+        var sut = new DibaoPayClient(
+            httpClient,
+            signer,
+            fakeTimeProvider,
+            NullLogger<DibaoPayClient>.Instance);
 
         var merchantId = "PGTES";
         var privateKey = "hpDXGkYeB0Sof1LT";
@@ -212,7 +227,7 @@ public class DibaoPayClientTests
             BankNo: "testBankNo",
             BankId: "2008");
 
-        _ = fakeSystemClock.UtcNow
+        _ = fakeTimeProvider.GetUtcNow()
             .Returns(DateTimeOffset.FromUnixTimeMilliseconds(1701671020850));
 
         _ = mockHttp

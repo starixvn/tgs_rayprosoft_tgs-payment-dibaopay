@@ -1,13 +1,12 @@
 ﻿using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Tgs.SerialNumberGenerator;
 
 namespace Tgs.Payment.DibaoPay;
 
 public class DibaoPayClient(
     HttpClient httpClient,
     DibaoPayHasher hasher,
-    ISystemClock systemClock,
+    TimeProvider timeProvider,
     ILogger<DibaoPayClient> logger)
 {
     public async ValueTask<DibaoPayClientDepositResponse> DepositAsync(string merchantId, string privateKey, DepositOrder order, CancellationToken cancellationToken = default)
@@ -20,7 +19,7 @@ public class DibaoPayClient(
             ["notify_url"] = order.CallbackUrl.AbsoluteUri,
             ["amount"] = order.Amount.ToString("#.##"),
             ["userip"] = order.UserIp,
-            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = timeProvider.GetUtcNow().ToUnixTimeMilliseconds().ToString(),
             ["custom"] = "",
         };
 
@@ -67,7 +66,7 @@ public class DibaoPayClient(
         var dict = new Dictionary<string, string?>
         {
             ["uid"] = merchantId,
-            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = timeProvider.GetUtcNow().ToUnixTimeMilliseconds().ToString(),
             ["orderid"] = formId.ToString("N"),
         };
 
@@ -119,7 +118,7 @@ public class DibaoPayClient(
             ["notify_url"] = order.CallbackUrl.AbsoluteUri,
             ["amount"] = order.Amount.ToString("#.##"),
             ["userip"] = order.UserIp,
-            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = timeProvider.GetUtcNow().ToUnixTimeMilliseconds().ToString(),
             ["custom"] = "",
             ["bank_account"] = order.BankAccount,
             ["bank_no"] = order.BankNo,
@@ -168,7 +167,7 @@ public class DibaoPayClient(
         var dict = new Dictionary<string, string?>
         {
             ["uid"] = merchantId,
-            ["timestamp"] = systemClock.UtcNow.ToUnixTimeMilliseconds().ToString(),
+            ["timestamp"] = timeProvider.GetUtcNow().ToUnixTimeMilliseconds().ToString(),
         };
 
         var sign = hasher.ComputeHash(privateKey, dict);
